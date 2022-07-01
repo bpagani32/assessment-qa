@@ -29,7 +29,11 @@ test('Add a bot', async () => {
     await driver .sleep (5000)
     
 })
-test('')
+test('Draw button displays' , async () => {
+    await driver.findElement(By.id('draw')).click()
+    await driver.sleep(4000)
+    const choicesSection = await driver choicesSection.isDisplayed()
+})
 test('')
 test('')
 

@@ -9,7 +9,7 @@ app.use(express.json())
 app.get('/', function(req, res) {
     res.sendFile(path.join(__dirname, 'public/index.html'))
 })
-app.get('/css', function(req, res) {
+app.get('/styles', function(req, res) {
     res.sendFile(path.join(__dirname, 'public/index.css'))
 })
 app.get('/js', function(req, res) {
@@ -96,7 +96,7 @@ app.post('/api/duel', (req, res) => {
             playerRecord.losses++
             res.status(200).send('You lost!')
         } else {
-            playerRecord.losses++
+            playerRecord.wins++
             res.status(200).send('You won!')
         }
     } catch (error) {
