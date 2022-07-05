@@ -6,57 +6,36 @@ const {shuffleArray} = require('./utils')
 
 app.use(express.json())
 
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.html'))
-})
-app.get('/styles', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.css'))
-})
-app.get('/js', function(req, res) {
-    res.sendFile(path.join(__dirname, 'public/index.js'))
-})
-app.get('/js', function(req, res) {
-    res.sendFile(path.join(__dirname, '../data.js'))
-})
+// include and initialize the rollbar library with your access token
 var Rollbar = require("rollbar");
 var rollbar = new Rollbar({
-  accessToken: 'a858766fd2e1401783cab2581189ed67',
+  accessToken: '46bb05401dd04898b2e24d39d46a4979',
   captureUncaught: true,
   captureUnhandledRejections: true
 });
 
 // record a generic message and send it to Rollbar
 rollbar.log("Hello world!");
-try {
-nonExistentFunction();
-  } catch (error) {
-    rollbar.info('catch try error')
-  }
 
-try {
-    nonExistentFunction2();
-  } catch (error) {
-    rollbar.warning('Warning Warning Warning')
-  }
+app.get('/', function(req, res) {
+    rollbar.log('user visiting site')
+    res.sendFile(path.join(__dirname, 'public/index.html'))
+})
 
-try {
-    nonExistentFunction3();
-  } catch (error) {
-    rollbar.error('Error Error Error')
-  }
+app.get('/styles', function(req, res) {
+    rollbar.info('styles available to visitor')
+    res.sendFile(path.join(__dirname, 'public/index.css'))
+})
 
-try {
-    nonExistentFunction4();
-  } catch (error) {
-    rollbar.critical('explosion')
-  }
-
-
+app.get('/js', function(req, res) {
+    res.sendFile(path.join(__dirname, 'public/index.js'))
+})
 
 app.get('/api/robots', (req, res) => {
     try {
         res.status(200).send(botsArr)
     } catch (error) {
+        rollbar.error('/api/robots not able to send botsArr to frontend')
         console.log('ERROR GETTING BOTS', error)
         res.sendStatus(400)
     }
@@ -67,8 +46,10 @@ app.get('/api/robots/five', (req, res) => {
         let shuffled = shuffleArray(bots)
         let choices = shuffled.slice(0, 5)
         let compDuo = shuffled.slice(6, 8)
+        //throw "tyring out rollbar.critical()"
         res.status(200).send({choices, compDuo})
     } catch (error) {
+        rollbar.critical('/api/robots/five not working: unable to duel')
         console.log('ERROR GETTING FIVE BOTS', error)
         res.sendStatus(400)
     }
@@ -96,7 +77,7 @@ app.post('/api/duel', (req, res) => {
             playerRecord.losses++
             res.status(200).send('You lost!')
         } else {
-            playerRecord.wins++
+            playerRecord.losses++
             res.status(200).send('You won!')
         }
     } catch (error) {
@@ -117,5 +98,5 @@ app.get('/api/player', (req, res) => {
 const port = process.env.PORT || 3000
 
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`)
+  console.log(`Jammin on port ${port}`)
 })
